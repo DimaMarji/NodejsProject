@@ -7,7 +7,35 @@ var User = (user) => {
     this.email = user.email;
     this.password = user.password;
 };
+User.getAll = (result) => {
+    pool.query("SELECT * FROM user", (err, res) => {
+        if (err) {
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    });
+};
 
+User.getById = (userId, result) => {
+    cacheValue = cache.get(`user${userId}`);
+    if (cacheValue == undefined) {
+        pool.query('SELECT * FROM user WHERE id = ?', userId, (err, res) => {
+            if (err) {
+                result(err, null);
+            } else {
+                if (res.length === 0) { // The user is not found for the given id
+                    result(null, {});
+                } else {
+                    cache.set(`user${userId}`, res);
+                    result(null, res[0]);
+                }
+            }
+        });
+    } else {
+        result(null, cacheValue);
+    }
+};
 
 User.register = (user, result) => {
     bcrypt.hash(user.password, 10, function(err, hash) {
