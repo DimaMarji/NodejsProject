@@ -1,11 +1,14 @@
 const pool = require('./pool');
 const bcrypt = require("bcrypt");
+const NodeCache = require("node-cache");
+const cache = new NodeCache({ stdTTL: 300, checkperiod: 150 });
 
 var User = (user) => {
     this.id = user.id;
     this.userName = user.userName;
     this.email = user.email;
     this.password = user.password;
+    this.roleId = user.roleId;
 };
 User.getAll = (result) => {
     pool.query("SELECT * FROM user", (err, res) => {
@@ -42,7 +45,7 @@ User.register = (user, result) => {
         if (err) {
             result(err, null);
         } else {
-            pool.query("INSERT INTO user SET userName = ? , email = ? , password = ?", [user.userName, user.email, hash], (err, res) => {
+            pool.query("INSERT INTO user SET userName = ? , email = ? , password = ? , roleId =? ", [user.userName, user.email, hash, user.roleId], (err, res) => {
                 if (err) {
                     result(err, null);
                 } else {

@@ -2,9 +2,8 @@ const Book = require('../models/books');
 const Joi = require('joi');
 const express = require('express');
 const app = express();
-const { json } = require('express');
 const router = express.Router();
-const jwt= require('jwt');
+const jwt= require('jsonwebtoken');
 
 router.get('/', (req, res) => {
     Book.getAllBook((err, books) => {
