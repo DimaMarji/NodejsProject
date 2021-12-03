@@ -123,4 +123,22 @@ User.updateUser = (id, user, result) => {
         }
     });
 };
+User.favbook = (userId, title, result) => {
+    const strQuery = `SELECT b.title
+                      FROM userbookfav bf INNER JOIN  book b ON bf.userId = b.id
+                      WHERE bf.userId = ${userId} or  r.roleName = '${roleName}'`;
+    pool.query(strQuery, (err, res) => {
+        if (err) {
+            result(err, null, 500);
+        } else {
+            if (res.length === 0) { // the user hasn't the given favbook
+                result(null, false, 200);
+            } else {
+                result(null, true, 200);
+            }
+        }
+    });
+};
+
+
 module.exports = User;
