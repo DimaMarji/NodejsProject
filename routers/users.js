@@ -110,7 +110,7 @@ router.put("/:id", (req, res) => {
     }
   });
 });
-router.get("/:id/fav", (req, res) => { 
+router.get("/fav", (req, res) => { 
     const bearerHeader = req.headers["authorization"]; 
     if (typeof bearerHeader !== "undefined") { 
       const bearer = bearerHeader.split(" "); 
