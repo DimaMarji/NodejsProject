@@ -1,9 +1,10 @@
-const Book = require('../models/books');
-const Joi = require('joi');
-const express = require('express');
+const Book = require("../models/books");
+const secretKey = require("../shared/secretKey");
+const Joi = require("joi");
+const express = require("express");
 const app = express();
 const router = express.Router();
-const jwt= require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 router.get('/', (req, res) => {
     Book.getAllBook((err, books) => {
@@ -44,10 +45,11 @@ router.get('/:title', (req, res) => {
     });
 });
 router.post('/', (req, res) => {
-    const title= req.body.title ;
-    const ISBN= req.body.ISBN;
-    const authorId=req.body.authorId;
-    const image = req.body.image;
+    const book={
+     title: req.body.title,
+     ISBN: req.body.ISBN,
+     authorId:req.body.authorId,
+     image : req.body.image}
     const { error } = ValidateModel(book);
     if (error) {
         return res.status(400).send({ error: error });
@@ -59,13 +61,15 @@ router.post('/', (req, res) => {
         } else {
           //   const payload= json.stringify({title:`A new books is add${books.title}`});
             res.status(201).json(book);
-        
+
         }
     });
 });
 
 router.put('/:id', (req, res) => {
-    const book = { name: req.body.name };
+    const book = { title: req.body.title,
+        ISBN: req.body.ISBN,
+        authorId:req.body.authorId };
     const bookId = req.params.id;
 
     if (isNaN(bookId)) { // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
@@ -99,7 +103,7 @@ router.delete('/:id', (req, res) => {
     });
 });
 
-router.delete('favourite/:id', (req, res) => {
+router.delete('/favourite/:id', (req, res) => {
     const bookId = req.params.id;
     if (isNaN(bookId)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
         return res.status(400).send('id should be a number!');
@@ -112,14 +116,68 @@ router.delete('favourite/:id', (req, res) => {
         }
     });
 });
-function ValidateModel(data) {
-    const schema = Joi.object({
-        name: Joi.string().max(50).required(),
+
+router.put("/:id/isRead", (req, res) => {
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const bearerToken = bearer[1];
+    jwt.verify(bearerToken, secretKey, (err, authData) => {
+      if (err) {
+        res.sendStatus(403);
+      } else {
+        const userId = authData.user.id;
+        const bookId = req.params.id;
+
+        Book.updateReadStatus(userId, bookId, (err, status, code) => {
+          if (err) {
+            res.status(code).json({ error: err });
+          } else {
+            res.status(200).json("Read status has changed successfully");
+          }
+        });
+      }
     });
+  } else {
+    res.status(403).send("Invalid authorization header"); // Forbidden
+  }
+});
 
-    return schema.validate(data);
+router.put("/:id/reorder", (req, res) => {
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const bearerToken = bearer[1];
+    jwt.verify(bearerToken, secretKey, (err, authData) => {
+      if (err) {
+        res.sendStatus(403);
+      } else {
+        const userId = authData.user.id;
+        const newFavOrder = req.body.newFavOrder;
+        const bookId = req.params.id;
+
+        Book.reorder(newFavOrder, bookId,userId, (err, order, code) => {
+          if (err) {
+            res.status(code).json({ error: err });
+          } else {
+            res.status(200).json({ order });
+          }
+        });
+      }
+    });
+  } else {
+    res.status(403).send("Invalid authorization header"); // Forbidden
+  }
+});
+
+      
+
+function ValidateModel(data) {
+  const schema = Joi.object({
+    name: Joi.string().max(50).required(),
+  });
+
+  return schema.validate(data);
 }
-
-
 
 module.exports = router;
