@@ -81,4 +81,64 @@ User.login = (userName, password, result) => {
         }
     });
 };
+User.deleteUser = (userId, result) => {
+    pool.getConnection((err, connection) => {
+        if (err) {
+            result(err, null, 500);
+        } else {
+            connection.query(`SELECT * FROM user WHERE id = ${userId}`, (err, resGet) => {
+                if (err) {
+                    connection.release();
+                    return result(err, null, 500);
+                } else {
+                    if (resGet.length === 0) { // The user is not found for the given id
+                        result({ error: 'Record not found' }, null, 404);
+                        connection.release();
+                    } else {
+                        // Use one connection to DB for the 2 queries
+                        connection.query(`DELETE FROM user WHERE id = ${userId}`, (errDel, resDel) => {
+                            connection.release();
+                            if (errDel) {
+                                result(errDel, null, 500);
+                            } else {
+                                result(null, resGet, 200);
+                                cache.del(`user${userId}`);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    });
+};
+User.updateUser = (id, user, result) => {
+    pool.query(`UPDATE user
+                SET userName = "${user.userName}", email="${user.email}"
+                WHERE id = ${id}`, (err, res) => {
+        if (err) {
+            result(err, null);
+        } else {
+            result(null, Object.assign({ id: id }, user));
+            cache.del(`user${id}`);
+        }
+    });
+};
+User.favbook = (userId, title, result) => {
+    const strQuery = `SELECT b.title
+                      FROM userbookfav bf INNER JOIN  book b ON bf.userId = b.id
+                      WHERE bf.userId = ${userId} or  r.roleName = '${roleName}'`;
+    pool.query(strQuery, (err, res) => {
+        if (err) {
+            result(err, null, 500);
+        } else {
+            if (res.length === 0) { // the user hasn't the given favbook
+                result(null, false, 200);
+            } else {
+                result(null, true, 200);
+            }
+        }
+    });
+};
+
+
 module.exports = User;
