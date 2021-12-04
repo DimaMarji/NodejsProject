@@ -111,10 +111,8 @@ User.deleteUser = (userId, result) => {
         }
     });
 };
-User.updateUser = (id, user, result) => {
-    pool.query(`UPDATE user
-                SET userName = "${user.userName}", email="${user.email}"
-                WHERE id = ${id}`, (err, res) => {
+User.updateById = (id, user, result) => {
+    pool.query(`UPDATE user SET userName = "${user.userName}", email="${user.email}" WHERE id = ${id}`, (err, res) => {
         if (err) {
             result(err, null);
         } else {
@@ -123,10 +121,8 @@ User.updateUser = (id, user, result) => {
         }
     });
 };
-User.favbook = (userId, title, result) => {
-    const strQuery = `SELECT b.title
-                      FROM userbookfav bf INNER JOIN  book b ON bf.userId = b.id
-                      WHERE bf.userId = ${userId} or  r.roleName = '${roleName}'`;
+User.getFavbooks = (userId, result) => {
+    const strQuery = `SELECT b.title FROM userbooksfav bf INNER JOIN  book b ON bf.bookId = b.id WHERE bf.userId = ${userId}`
     pool.query(strQuery, (err, res) => {
         if (err) {
             result(err, null, 500);

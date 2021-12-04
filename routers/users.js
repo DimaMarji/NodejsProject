@@ -85,15 +85,17 @@ router.post("/login", (req, res) => {
 //Update user info
 router.put("/:id", (req, res) => {
   const id = req.params.id;
-  const userName = req.body.userName;
-  const password = req.body.password;
-  const email = req.body.email;
-  const roleId = req.body.roleId;
+  const user = {
+    userName: req.body.userName,
+    email: req.body.email,
+    password: req.body.password,
+    roleId: req.body.roleId,
+  };
   if (isNaN(id)) {
     // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
     return res.status(400).send("id should be a number!");
   }
-  User.updateById(id, userName, password, email, roleId, (err, user) => {
+  User.updateById(id, user, (err, user) => {
     const { error } = ValidateModel(user);
     if (error) {
       return res.status(400).send({ error: error });
@@ -110,31 +112,30 @@ router.put("/:id", (req, res) => {
     }
   });
 });
-router.get("/fav", (req, res) => { 
-    const bearerHeader = req.headers["authorization"]; 
-    if (typeof bearerHeader !== "undefined") { 
-      const bearer = bearerHeader.split(" "); 
-      const bearerToken = bearer[1]; 
-      jwt.verify(bearerToken, secretKey, (err, authData) => { 
-        if (err) { 
-          res.sendStatus(403); 
-        } else { 
-          const userId = authData.user.id; 
-          
-   
-          Book.favBook(userId, (err, status, code) => { 
-            if (err) { 
-              res.status(code).json({ error: err }); 
-            } else { 
-              res.status(200).json({ status: status }); 
-            } 
-          }); 
-        } 
-      }); 
-    } else { 
-      res.status(403).send("Invalid authorization header"); // Forbidden 
-    } 
-  });
+router.get("/fav", (req, res) => {
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const bearerToken = bearer[1];
+    jwt.verify(bearerToken, secretKey, (err, authData) => {
+      if (err) {
+        res.sendStatus(403);
+      } else {
+        const userId = authData.user.id;
+
+        Book.getFavbooks(userId, (err, books, code) => {
+          if (err) {
+            res.status(code).json({ error: err });
+          } else {
+            res.status(200).json({ books });
+          }
+        });
+      }
+    });
+  } else {
+    res.status(403).send("Invalid authorization header"); // Forbidden
+  }
+});
 router.delete("/:id", (req, res) => {
   const userId = req.params.id;
   if (isNaN(userId))
