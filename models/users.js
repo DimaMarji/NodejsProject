@@ -136,5 +136,4 @@ User.getFavbooks = (userId, result) => {
     });
 };
 
-
 module.exports = User;
