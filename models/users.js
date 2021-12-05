@@ -41,7 +41,7 @@ User.getById = (userId, result) => {
 };
 
 User.register = (user, result) => {
-    bcrypt.hash(user.password, 10, function(err, hash) {
+    bcrypt.hash(user.password, 10, function (err, hash) {
         if (err) {
             result(err, null);
         } else {
@@ -122,14 +122,21 @@ User.updateById = (id, user, result) => {
     });
 };
 User.getFavbooks = (userId, result) => {
-    const strQuery = `SELECT title,isRead FROM userbooksfav bf INNER JOIN  book b ON bf.bookId = b.id WHERE bf.userId = ${userId}`
-    pool.query(strQuery, (err, res) => {
-        if (err) {
-            result(err, null);
-        } else {
-            result(null, res);
-        }
-    });
+    cachevalue = cache.get(`favbook${userId}`);
+    if (cachevalue == undefined) {
+        const strQuery = `SELECT title,isRead FROM userbooksfav bf INNER JOIN  book b ON bf.bookId = b.id WHERE bf.userId = ${userId}`
+        pool.query(strQuery, (err, res) => {
+            if (err) {
+                result(err, null);
+            } else {
+                result(null, res);
+                cache.set(`favbook${userId}`, res);
+            }
+        });
+    }
+    else {
+        result(null, cachevalue);
+    }
 };
 
 module.exports = User;
