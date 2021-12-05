@@ -123,10 +123,8 @@ User.updateUser = (id, user, result) => {
         }
     });
 };
-User.favbook = (userId, title, result) => {
-    const strQuery = `SELECT b.title
-                      FROM userbookfav bf INNER JOIN  book b ON bf.userId = b.id
-                      WHERE bf.userId = ${userId} or  r.roleName = '${roleName}'`;
+User.getFavbooks = (userId, result) => {
+    const strQuery = `SELECT b.title FROM userbooksfav bf INNER JOIN  book b ON bf.bookId = b.id WHERE bf.userId = ${userId}`
     pool.query(strQuery, (err, res) => {
         if (err) {
             result(err, null, 500);
@@ -139,6 +137,5 @@ User.favbook = (userId, title, result) => {
         }
     });
 };
-
 
 module.exports = User;
