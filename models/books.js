@@ -32,7 +32,7 @@ Book.reorder=(newFavOrder,bookId,userId,result) => {
             console.log(oldFav);
             console.log(newFavOrder);
             if (oldFav>newFavOrder){
-                connection.query(`UPDATE userbooksfav SET favOrder = favOrder+1 WHERE favOrder BETWEEN ${newFavOrder} and ${oldFav}-1  when ${newFavOrder}>${oldFav} then favOrder-1 WHERE favOrder BETWEEN ${oldFav}+1 and ${newFavOrder} end)`, (err, res) => {
+                connection.query(`UPDATE userbooksfav SET favOrder = favOrder+1 WHERE favOrder BETWEEN ${newFavOrder} and ${oldFav}-1`, (err, res) => {
                     if (err) {
                         result(err, null, 500);
                     } else {
