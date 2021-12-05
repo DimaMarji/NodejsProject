@@ -118,15 +118,8 @@ router.delete('/favourite/:id', (req, res) => {
 });
 
 router.put("/:id/isRead", (req, res) => {
-  const bearerHeader = req.headers["authorization"];
-  if (typeof bearerHeader !== "undefined") {
-    const bearer = bearerHeader.split(" ");
-    const bearerToken = bearer[1];
-    jwt.verify(bearerToken, secretKey, (err, authData) => {
-      if (err) {
-        res.sendStatus(403);
-      } else {
-        const userId = authData.user.id;
+  console.log(req.userId)
+        const userId = req.userId;;
         const bookId = req.params.id;
 
         Book.updateReadStatus(userId, bookId, (err, status, code) => {
@@ -136,23 +129,13 @@ router.put("/:id/isRead", (req, res) => {
             res.status(200).json("Read status has changed successfully");
           }
         });
-      }
+      
     });
-  } else {
-    res.status(403).send("Invalid authorization header"); // Forbidden
-  }
-});
+
 
 router.put("/:id/reorder", (req, res) => {
-  const bearerHeader = req.headers["authorization"];
-  if (typeof bearerHeader !== "undefined") {
-    const bearer = bearerHeader.split(" ");
-    const bearerToken = bearer[1];
-    jwt.verify(bearerToken, secretKey, (err, authData) => {
-      if (err) {
-        res.sendStatus(403);
-      } else {
-        const userId = authData.user.id;
+  console.log(req.userId)
+        const userId = req.userId;
         const newFavOrder = req.body.newFavOrder;
         const bookId = req.params.id;
 
@@ -163,12 +146,8 @@ router.put("/:id/reorder", (req, res) => {
             res.status(200).json({ order });
           }
         });
-      }
     });
-  } else {
-    res.status(403).send("Invalid authorization header"); // Forbidden
-  }
-});
+ 
 
       
 

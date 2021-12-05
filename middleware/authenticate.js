@@ -24,6 +24,7 @@ const authenticate = (req, res, next) => {
               res.status(403).send("Error while verifying rules"); // Forbidden
             } else {
               if (rulesAreVerified) {
+                req.userId=authData.user.id;
                 next();
               } else {
                 res.sendStatus(403); // Forbidden

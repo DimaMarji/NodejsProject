@@ -16,6 +16,18 @@ router.get("/", (req, res) => {
     }
   });
 });
+
+router.get("/fav", (req, res) => {
+  console.log(req.userId)
+        const userId = req.userId;
+        User.getFavbooks(userId, (err, books, code) => {
+          if (err) {
+            res.status(code).json({ error: err });
+          } else {
+            res.status(200).json( books );
+          }
+        });
+    });
 // Get user by ID
 router.get("/:id", (req, res) => {
   const id = req.params.id;
@@ -112,30 +124,7 @@ router.put("/:id", (req, res) => {
     }
   });
 });
-router.get("/fav", (req, res) => {
-  const bearerHeader = req.headers["authorization"];
-  if (typeof bearerHeader !== "undefined") {
-    const bearer = bearerHeader.split(" ");
-    const bearerToken = bearer[1];
-    jwt.verify(bearerToken, secretKey, (err, authData) => {
-      if (err) {
-        res.sendStatus(403);
-      } else {
-        const userId = authData.user.id;
 
-        Book.getFavbooks(userId, (err, books, code) => {
-          if (err) {
-            res.status(code).json({ error: err });
-          } else {
-            res.status(200).json({ books });
-          }
-        });
-      }
-    });
-  } else {
-    res.status(403).send("Invalid authorization header"); // Forbidden
-  }
-});
 router.delete("/:id", (req, res) => {
   const userId = req.params.id;
   if (isNaN(userId))
