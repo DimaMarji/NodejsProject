@@ -122,7 +122,7 @@ User.updateById = (id, user, result) => {
     });
 };
 User.getFavbooks = (userId, result) => {
-    const strQuery = `SELECT title,isRead FROM userbooksfav bf INNER JOIN  book b ON bf.bookId = b.id WHERE bf.userId = ${userId}`
+    const strQuery = `SELECT title,isRead,favOrder FROM userbooksfav bf INNER JOIN  book b ON bf.bookId = b.id WHERE bf.userId = ${userId} ORDER BY bf.favOrder`
     pool.query(strQuery, (err, res) => {
         if (err) {
             result(err, null);
