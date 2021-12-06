@@ -8,7 +8,7 @@ var Book = (book) => {
 };
 
 Book.getAll = (result) => {
-    pool.query('SELECT * FROM book ORDERD BY id ', (err, res) => {
+    pool.query('SELECT * FROM book ORDER BY id ', (err, res) => {
         if (err) {
             result(err, null);
         } else {

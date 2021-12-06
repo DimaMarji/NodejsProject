@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const http = require('http');
+const https = require('https');
 const fs= require('fs');
 const cors = require('cors')
 app.use(express.json());
@@ -34,6 +35,6 @@ const option={
     cert:fs.readFileSync('./config/cert.pem','utf8')
 };
   
-http.createServer(app).listen(3000);
+https.createServer(option,app).listen(3000);
 console.log('listening on 3000')
 module.exports = app;
