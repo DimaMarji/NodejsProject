@@ -1,4 +1,4 @@
-const Book = require("../models/books");
+const Book = require("../models/book");
 const secretKey = require("../shared/secretKey");
 const Joi = require("joi");
 const express = require("express");
@@ -36,7 +36,7 @@ router.get('/:id', (req, res) => {
 
 router.get('/:title', (req, res) => {
     const title = req.params.title;
-    Book.getBookByTitle(title, (err, book) => {
+    Book.getByTitle(title, (err, book) => {
         if(book) {
             res.status(200).json(book);
         } else {
@@ -65,7 +65,7 @@ router.post('/', (req, res) => {
         }
     });
 });
-
+/*
 router.put('/:id', (req, res) => {
     const book = { title: req.body.title,
         ISBN: req.body.ISBN,
@@ -87,7 +87,7 @@ router.put('/:id', (req, res) => {
             res.status(200).json(book);
         }
     });
-});
+});*/
 
 router.delete('/:id', (req, res) => {
     const bookId = req.params.id;
@@ -102,24 +102,72 @@ router.delete('/:id', (req, res) => {
         }
     });
 });
+router.post('/addtofav/:id', (req, res) => {
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const bearerToken = bearer[1];
+    jwt.verify(bearerToken, secretKey, (err, authData) => {
+      if (err) {
+        res.sendStatus(403);
+      } else {
+        const newbookfav={
+            bookId = req.params.id,
+            userId = authData.user.id,
+            FavOrder = req.body.newFavOrder
+        }
+
+        Book.addBookToFav(newbookfav, (err, status, code) => {
+          if (err) {
+            res.status(code).json({ error: err });
+          } else {
+            res.status(200).json("New book has been added to your book favourite list");
+          }
+        });
+      }
+    });
+  } else {
+    res.status(403).send("Invalid authorization header"); // Forbidden
+  }
+});
+
 
 router.delete('/favourite/:id', (req, res) => {
-    const bookId = req.params.id;
-    if (isNaN(bookId)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
-        return res.status(400).send('id should be a number!');
+    const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const bearerToken = bearer[1];
+    jwt.verify(bearerToken, secretKey, (err, authData) => {
+      if (err) {
+        res.sendStatus(403);
+      } else {
+        const userId = authData.user.id;
+        const bookId = req.params.id;
 
-    Book.deleteBook(bookId, (err, book, code) => {
-        if (err) {
+        Book.deletBookFromFav(userId, bookId, (err, status, code) => {
+          if (err) {
             res.status(code).json({ error: err });
-        } else {
-            res.status(200).json(book);
-        }
+          } else {
+            res.status(200).json("Read status has changed successfully");
+          }
+        });
+      }
     });
+  } else {
+    res.status(403).send("Invalid authorization header"); // Forbidden
+  }
 });
 
 router.put("/:id/isRead", (req, res) => {
-  console.log(req.userId)
-        const userId = req.userId;;
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const bearerToken = bearer[1];
+    jwt.verify(bearerToken, secretKey, (err, authData) => {
+      if (err) {
+        res.sendStatus(403);
+      } else {
+        const userId = authData.user.id;
         const bookId = req.params.id;
 
         Book.updateReadStatus(userId, bookId, (err, status, code) => {
@@ -129,13 +177,23 @@ router.put("/:id/isRead", (req, res) => {
             res.status(200).json("Read status has changed successfully");
           }
         });
-      
+      }
     });
-
+  } else {
+    res.status(403).send("Invalid authorization header"); // Forbidden
+  }
+});
 
 router.put("/:id/reorder", (req, res) => {
-  console.log(req.userId)
-        const userId = req.userId;
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const bearerToken = bearer[1];
+    jwt.verify(bearerToken, secretKey, (err, authData) => {
+      if (err) {
+        res.sendStatus(403);
+      } else {
+        const userId = authData.user.id;
         const newFavOrder = req.body.newFavOrder;
         const bookId = req.params.id;
 
@@ -146,8 +204,12 @@ router.put("/:id/reorder", (req, res) => {
             res.status(200).json({ order });
           }
         });
+      }
     });
- 
+  } else {
+    res.status(403).send("Invalid authorization header"); // Forbidden
+  }
+});
 
       
 
