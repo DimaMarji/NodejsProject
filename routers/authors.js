@@ -1,7 +1,6 @@
-const Auths = require('../../models/author');
+const Auths = require('../models/author');
 const Joi = require('joi');
 const express = require('express');
-const Webpush = require('../../models/web-push-mgmt');
 const app = express();
 const router = express.Router();
 

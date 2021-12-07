@@ -29,8 +29,8 @@ app.use(auth);
 //     const payload = JSON.stringify({ title: 'Push Test from YEP'});
 //     WebPush.sendPushMsg(subscription,payload)
 // });
-
-app.use('/api/books', require('./routers/books'));
+app.use('/api/author', require('./routers/authors'));
+// app.use('/api/books', require('./routers/books'));
 app.use('/api/users', require('./routers/users'));
 app.use('/', (req, res) => {
     res.status(404).send('Incorrect URL!');
