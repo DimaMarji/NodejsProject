@@ -7,7 +7,7 @@ var Book = (book) => {
    
 };
 
-Book.getAll = (result) => {
+Book.getAllBook = (result) => {
     pool.query('SELECT * FROM book ORDER BY id ', (err, res) => {
         if (err) {
             result(err, null);
@@ -58,14 +58,14 @@ Book.getByTitle = (booktitle, result) => {
 };
 
 Book.createBook = (newBook, result) => {
-    pool.query("INSERT INTO book (title ,authorId,ISBN,image ) VALUES ( ?,?,?,? )", [newBook.title, newBook.Author.getAllAuthors,
+    pool.query("INSERT INTO book (title ,authorId,ISBN,image ) VALUES ( ?,?,?,? )", [newBook.title, newBook.authorId,
     newBook.ISBN, newBook.image], (err, res) => {
         if (err) {
             console.log("error", err);
             result(err, null, 500);
         } else {
             console.log(res)
-            result(null, { "id": res.insertId, "title": newBook.title, "authorId": Auths.getAllAuthors, "ISBN": newBook.ISBN, "image": newBook.image });
+            result(null, { "id": res.insertId, "title": newBook.title, "authorId": newBook.authorId, "ISBN": newBook.ISBN, "image": newBook.image });
 
 
         }

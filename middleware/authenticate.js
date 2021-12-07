@@ -41,7 +41,7 @@ const authenticate = (req, res, next) => {
 
 function isAllowedRoute(req) {
   // Allowed Routes:
-  return ["/api/users/register", "/api/users/login"].indexOf(req.path) >= 0;
+  return ["/api/users/register", "/api/users/login","/api/books/"].indexOf(req.path) >= 0;
 }
 
 function isAdminRoutes(req) {
