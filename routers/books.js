@@ -1,4 +1,4 @@
-// const Book = require("../models/books");
+const Book = require("../models/book");
 const secretKey = require("../shared/secretKey");
 const Joi = require("joi");
 const express = require("express");
@@ -159,6 +159,20 @@ router.put("/:id/reorder", (req, res) => {
  
 
       
+    router.post("/fav", (req, res) => {
+        const newfavbook = {
+          userId: req.userId,
+         bookId: req.body.bookId,
+        };
+      
+        Book.addBookToFav(newfavbook, (err, book) => {
+          if (err) {
+            res.status(500).json({ error: err });
+          } else {
+            res.status(201).json(book);
+          }
+        });
+      });
 
 function ValidateModel(data) {
   const schema = Joi.object({

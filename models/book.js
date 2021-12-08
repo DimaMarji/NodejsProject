@@ -116,7 +116,7 @@ Book.deleteBook = (bookId, result) => {
 
 Book.addBookToFav =(newfavbook,result)=>{
 
-    pool.query("INSERT INTO userbooksfav (userId ,bookId,favOrder ) VALUES ( ?,?,?)", [newfavbook.userId, newfavbook.bookId,newfavbook.favOrder], 
+    pool.query("INSERT INTO userbooksfav (userId ,bookId ) VALUES ( ?,?)", [newfavbook.userId, newfavbook.bookId], 
     (err, res) => {
             if (err) {
                 console.log("error", err);

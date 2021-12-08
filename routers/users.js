@@ -88,7 +88,7 @@ router.post("/login", (req, res) => {
       jwt.sign({ user }, secretKey, { expiresIn: "1d" }, (err, token) => {
         res
           .status(201)
-          .json({ token: token, userName: user.userName, email: user.email });
+          .json({ token: token, userName: user.userName, email: user.email,roleId:user.roleId });
       });
     }
   });

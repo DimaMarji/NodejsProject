@@ -30,7 +30,7 @@ app.use(auth);
 //     WebPush.sendPushMsg(subscription,payload)
 // });
 app.use('/api/author', require('./routers/authors'));
-// app.use('/api/books', require('./routers/books'));
+app.use('/api/books', require('./routers/books'));
 app.use('/api/users', require('./routers/users'));
 app.use('/', (req, res) => {
     res.status(404).send('Incorrect URL!');

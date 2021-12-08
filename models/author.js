@@ -10,8 +10,8 @@ class Author {
     }
 }
 
-Author.getAllAuthors = (result) => {
-    pool.query('SELECT * FROM author ORDER BY id ', (err, res) => {
+Author.getAll = (result) => {
+    pool.query('SELECT * FROM author', (err, res) => {
         if (err) {
             result(err, null);
         } else {
