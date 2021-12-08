@@ -23,6 +23,26 @@ Book.getAllBook = (result) => {
     });
 };
 
+
+Book.getByPage = (pageId, result) => {
+    cacheValue = cache.get(`page${pageId}`);
+    if (cacheValue == undefined) {
+        pool.query(`SELECT title,ISBN,image,name FROM book b INNER JOIN auther a on b.authorid=a.id limit 10 offset 10*(${pageId}-1)`, pageId, (err, res) => {
+            if (err) {
+                result(err, null);
+            } else {
+                if (res.length === 0) { // The book is not found for the givent id
+                    result(null, {});
+                } else {
+                    cache.set(`page${pageId}`, res);
+                    result(null, res);
+                }
+            }
+        });
+    } else {
+        result(null, cacheValue);
+    }
+};
 Book.getById = (bookId, result) => {
     cacheValue = cache.get(`book${bookId}`);
     if (cacheValue == undefined) {
