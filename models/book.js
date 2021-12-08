@@ -14,7 +14,7 @@ class Book {
 }
 
 Book.getAllBook = (result) => {
-    pool.query('SELECT * FROM book ORDER BY id ', (err, res) => {
+    pool.query('SELECT title,ISBN,image,name FROM book b INNER JOIN auther a on b.authorid=a.id', (err, res) => {
         if (err) {
             result(err, null);
         } else {
@@ -26,7 +26,7 @@ Book.getAllBook = (result) => {
 Book.getById = (bookId, result) => {
     cacheValue = cache.get(`book${bookId}`);
     if (cacheValue == undefined) {
-        pool.query('SELECT * FROM book WHERE id = ?', bookId, (err, res) => {
+        pool.query('SELECT * FROM title,ISBN,image,name FROM book b INNER JOIN auther a on b.authorid=a.id WHERE b.id = ?', bookId, (err, res) => {
             if (err) {
                 result(err, null);
             } else {

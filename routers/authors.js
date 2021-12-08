@@ -5,7 +5,7 @@ const app = express();
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    Auths.getAll((err, Auths) => {
+    Auths.getAllAuthors((err, Auths) => {
         if (err) {
             res.status(500).json({ error: err });
         } else {

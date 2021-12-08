@@ -40,29 +40,6 @@ Author.getById = (authorId, result) => {
     }
 };
 
-Author.getByname = (authorname, result) => {
-    cacheValue = cache.get(`author${authorname}`);
-    if (cacheValue == undefined) {
-        pool.query('SELECT * FROM author WHERE name = ?', authorname, (err, res) => {
-            if (err) {
-                result(err, null);
-            } else {
-                if (res.length === 0) { // The user is not found for the givent id
-                    result(null, {});
-                } else {
-                    cache.set(`author${authorname}`, res);
-                    result(null, res);
-                }
-            }
-        });
-    } else {
-        result(null, cacheValue);
-    }
-};
-
-
-
-
 Author.createAuthor = (newAuthor, result) => {
     pool.query("INSERT INTO author (name) VALUES ( ? )", newAuthor.name, (err, res) => {
         if (err) {
