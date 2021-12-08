@@ -36,7 +36,7 @@ router.get('/:id', (req, res) => {
 
 router.get('/:title', (req, res) => {
     const title = req.params.title;
-    Book.getBookByTitle(title, (err, book) => {
+    Book.getByTitle(title, (err, book) => {
         if(book) {
             res.status(200).json(book);
         } else {
@@ -75,7 +75,7 @@ router.post('/', (req, res) => {
 });
 });
 
-router.put('/:id', (req, res) => {
+/*router.put('/:id', (req, res) => {
     const book = { title: req.body.title,
         ISBN: req.body.ISBN,
         authorId:req.body.authorId };
@@ -96,7 +96,7 @@ router.put('/:id', (req, res) => {
             res.status(200).json(book);
         }
     });
-});
+});*/
 
 router.delete('/:id', (req, res) => {
     const bookId = req.params.id;
@@ -117,7 +117,7 @@ router.delete('/favourite/:id', (req, res) => {
     if (isNaN(bookId)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
         return res.status(400).send('id should be a number!');
 
-    Book.deleteBook(bookId, (err, book, code) => {
+    Book.deleteBookFromFav(bookId, (err, book, code) => {
         if (err) {
             res.status(code).json({ error: err });
         } else {
