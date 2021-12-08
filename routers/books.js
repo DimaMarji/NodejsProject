@@ -15,6 +15,23 @@ router.get('/', (req, res) => {
         }
     });
 });
+router.get('/pages/:page', (req, res) => {
+  const page = req.params.page;
+  if (isNaN(page)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
+      return res.status(400).send('id should be a number!');
+
+  Book.getByPage(page, (err, book) => {
+      if (err) {
+          res.status(500).json({ error: err });
+      } else {
+          if (Object.keys(book).length === 0) { // here book = {}
+              res.status(404).json(book);
+          } else {
+              res.status(200).json(book);
+          }
+      }
+  });
+});
 
 router.get('/:id', (req, res) => {
     const id = req.params.id;
