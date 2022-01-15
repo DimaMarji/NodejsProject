@@ -14,7 +14,7 @@ class Book {
 }
 
 Book.getAllBook = (result) => {
-    pool.query('SELECT title,ISBN,image,name FROM book b INNER JOIN auther a on b.authorid=a.id', (err, res) => {
+    pool.query('SELECT b.id,title,ISBN,image,name as author FROM book b INNER JOIN author a on b.authorid=a.id', (err, res) => {
         if (err) {
             result(err, null);
         } else {
@@ -27,7 +27,7 @@ Book.getAllBook = (result) => {
 Book.getByPage = (pageId, result) => {
     cacheValue = cache.get(`page${pageId}`);
     if (cacheValue == undefined) {
-        pool.query(`SELECT title,ISBN,image,name FROM book b INNER JOIN auther a on b.authorid=a.id limit 10 offset 10*(${pageId}-1)`, pageId, (err, res) => {
+        pool.query(`SELECT title,ISBN,image,name FROM book b INNER JOIN auther a on b.authorid=a.id limit=10 offset= 10*(${pageId}-1)`, pageId, (err, res) => {
             if (err) {
                 result(err, null);
             } else {
@@ -46,7 +46,7 @@ Book.getByPage = (pageId, result) => {
 Book.getById = (bookId, result) => {
     cacheValue = cache.get(`book${bookId}`);
     if (cacheValue == undefined) {
-        pool.query('SELECT * FROM title,ISBN,image,name FROM book b INNER JOIN auther a on b.authorid=a.id WHERE b.id = ?', bookId, (err, res) => {
+        pool.query('SELECT title,ISBN,image,a.name as author FROM book b INNER JOIN author a on b.authorid=a.id WHERE b.id = ?', bookId, (err, res) => {
             if (err) {
                 result(err, null);
             } else {
@@ -106,6 +106,7 @@ Book.createBook = (newBook, result) => {
 Book.deleteBook = (bookId, result) => {
     pool.getConnection((err, connection) => {
         if (err) {
+            console.log(bookId)
             result(err, null, 500);
         } else {
             connection.query(`SELECT * FROM book WHERE id = ${bookId}`, (err, resGet) => {

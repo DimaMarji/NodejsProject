@@ -15,12 +15,12 @@ router.get('/', (req, res) => {
         }
     });
 });
-router.get('/pages/:page', (req, res) => {
-  const page = req.params.page;
-  if (isNaN(page)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
+router.get('/pages/:pageId', (req, res) => {
+  const pageId = req.params.pageId;
+  if (isNaN(pageId)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
       return res.status(400).send('id should be a number!');
 
-  Book.getByPage(page, (err, book) => {
+  Book.getByPage(pageId, (err, book) => {
       if (err) {
           res.status(500).json({ error: err });
       } else {
@@ -32,7 +32,16 @@ router.get('/pages/:page', (req, res) => {
       }
   });
 });
-
+// router.get('/:title', (req, res) => {
+//     const title = req.params.title;
+//     Book.getByTitle(title, (err, book) => {
+//         if(book) {
+//             res.status(200).json(book);
+//         } else {
+//             res.status(404).json({ message: 'No valid entry found' });
+//         }
+//     });
+// });
 router.get('/:id', (req, res) => {
     const id = req.params.id;
     if (isNaN(id)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
@@ -51,16 +60,7 @@ router.get('/:id', (req, res) => {
     });
 });
 
-router.get('/:title', (req, res) => {
-    const title = req.params.title;
-    Book.getByTitle(title, (err, book) => {
-        if(book) {
-            res.status(200).json(book);
-        } else {
-            res.status(404).json({ message: 'No valid entry found' });
-        }
-    });
-});
+
 router.post('/', (req, res) => {
     let image;
     let uploadPath;

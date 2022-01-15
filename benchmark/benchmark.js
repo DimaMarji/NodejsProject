@@ -1,6 +1,5 @@
 const siege = require('siege');
- siege()
-.on(3000)
-.for(400) .times
-.get('/api/books')
+siege()
+.concurrent(1)
+.get('https://localhost:5000/api/books')
 .attack()

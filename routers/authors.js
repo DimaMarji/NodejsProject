@@ -5,7 +5,7 @@ const app = express();
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    Auths.getAllAuthors((err, Auths) => {
+    Auths.getAll((err, Auths) => {
         if (err) {
             res.status(500).json({ error: err });
         } else {
@@ -55,7 +55,7 @@ router.post('/', (req, res) => {
 
 router.delete('/:id', (req, res) => {
     const authId = req.params.id;
-    if (isNaN(specId)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
+    if (isNaN(authId)) // isNaN (is Not a Number) is a function that verifies whether a given string is a normal number
         return res.status(400).send('id should be a number!');
 
     Auths.deleteAuthor(authId, (err, author, code) => {
